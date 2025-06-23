@@ -4,11 +4,16 @@ import numpy as np
 import hashlib
 import random
 import math
+import urllib.request
+import os
 
 app = Flask(__name__)
 
-# Replace this with your own MP4 URL or hosted video file path
+# Video source
 VIDEO_URL = "https://filesamples.com/samples/video/mp4/sample_640x360.mp4"
+LOCAL_VIDEO = "video.mp4"
+
+# Configuration
 GRID_SIZE = (2, 2)
 THRESHOLD_DELTA = 6.4
 
@@ -25,12 +30,19 @@ def index():
 
 @app.route('/generate', methods=['GET'])
 def generate():
-    cap = cv2.VideoCapture(VIDEO_URL)
+    # Download video to local file
+    try:
+        urllib.request.urlretrieve(VIDEO_URL, LOCAL_VIDEO)
+    except Exception as e:
+        return jsonify({"error": "Failed to download video", "details": str(e)}), 500
+
+    cap = cv2.VideoCapture(LOCAL_VIDEO)
     if not cap.isOpened():
         return jsonify({"error": "Failed to open video stream"}), 500
 
     activity_bits = []
     prev_gray = None
+    frame_count = 0
     skip = random.randint(5, 50)
     for _ in range(skip):
         cap.read()
@@ -64,15 +76,28 @@ def generate():
                     activity_bits.extend([int(b) for b in bits])
 
         prev_gray = gray
+        frame_count += 1
+
         for _ in range(random.randint(1, 4)):
             cap.read()
 
     cap.release()
 
+    print(f"Frames captured: {frame_count}, Bits collected: {len(activity_bits)}")
+
+    if len(activity_bits) < 256:
+        return jsonify({"error": "Not enough data collected to generate hash"}), 500
+
     binary_string = ''.join(map(str, activity_bits[:256]))
     bit_bytes = int(binary_string, 2).to_bytes(32, byteorder='big')
     hash_digest = hashlib.sha256(bit_bytes).hexdigest()
     entropy = compute_entropy(binary_string)
+
+    # Optional: clean up the video file
+    try:
+        os.remove(LOCAL_VIDEO)
+    except:
+        pass
 
     return jsonify({
         "binary": binary_string,
