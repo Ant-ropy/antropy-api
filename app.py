@@ -2,17 +2,27 @@ from flask import Flask, jsonify
 import cv2
 import numpy as np
 import hashlib
-import subprocess
 import random
 import math
+from yt_dlp import YoutubeDL
 
 app = Flask(__name__)
 
 # Configuration
 YOUTUBE_URL = "https://www.youtube.com/watch?v=SOWONnGGRqo"
-YT_DLP_PATH = "yt-dlp"  # Use relative path if possible
 GRID_SIZE = (2, 2)
 THRESHOLD_DELTA = 6.4
+
+def get_direct_url(youtube_url):
+    ydl_opts = {
+        'quiet': True,
+        'skip_download': True,
+        'format': 'best',
+        'noplaylist': True
+    }
+    with YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(youtube_url, download=False)
+        return info['url']
 
 def compute_entropy(bitstring):
     counts = [bitstring.count('0'), bitstring.count('1')]
@@ -24,11 +34,7 @@ def compute_entropy(bitstring):
 @app.route('/generate', methods=['GET'])
 def generate():
     try:
-        result = subprocess.run(
-            [YT_DLP_PATH, '-g', YOUTUBE_URL],
-            capture_output=True, text=True, check=True
-        )
-        direct_url = result.stdout.strip()
+        direct_url = get_direct_url(YOUTUBE_URL)
     except Exception as e:
         return jsonify({"error": "Failed to get stream URL", "details": str(e)}), 500
 
