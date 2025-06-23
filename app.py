@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import cv2
 import numpy as np
 import hashlib
@@ -7,12 +8,8 @@ import math
 import urllib.request
 import os
 
-from flask import Flask, jsonify
-from flask_cors import CORS
-
 app = Flask(__name__)
-CORS(app, origins=["https://www.antropy.net"])  # only allow your website
-
+CORS(app, origins=["https://www.antropy.net"])  # Allow frontend to call this API
 
 # Video source
 VIDEO_URL = "https://filesamples.com/samples/video/mp4/sample_640x360.mp4"
@@ -35,7 +32,6 @@ def index():
 
 @app.route('/generate', methods=['GET'])
 def generate():
-    # Download video to local file
     try:
         urllib.request.urlretrieve(VIDEO_URL, LOCAL_VIDEO)
     except Exception as e:
@@ -98,7 +94,6 @@ def generate():
     hash_digest = hashlib.sha256(bit_bytes).hexdigest()
     entropy = compute_entropy(binary_string)
 
-    # Optional: clean up the video file
     try:
         os.remove(LOCAL_VIDEO)
     except:
