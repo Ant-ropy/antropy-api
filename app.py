@@ -9,7 +9,7 @@ import urllib.request
 import os
 
 app = Flask(__name__)
-CORS(app, origins=["https://www.antropy.net"])  # Allow frontend to call this API
+CORS(app)
 
 # Video source
 VIDEO_URL = "https://filesamples.com/samples/video/mp4/sample_640x360.mp4"
