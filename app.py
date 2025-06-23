@@ -31,6 +31,11 @@ def compute_entropy(bitstring):
     entropy = -sum(p * math.log2(p) for p in probs)
     return entropy
 
+@app.route('/', methods=['GET'])
+def index():
+    return "<h3>Antropy Hash API is running.<br>Use <code>/generate</code> to get a hash.</h3>"
+
+
 @app.route('/generate', methods=['GET'])
 def generate():
     try:
