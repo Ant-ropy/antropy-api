@@ -3,3 +3,4 @@ opencv-python-headless
 numpy
 gunicorn
 yt-dlp
+flask-cors
