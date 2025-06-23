@@ -7,7 +7,12 @@ import math
 import urllib.request
 import os
 
+from flask import Flask, jsonify
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app, origins=["https://www.antropy.net"])  # only allow your website
+
 
 # Video source
 VIDEO_URL = "https://filesamples.com/samples/video/mp4/sample_640x360.mp4"
