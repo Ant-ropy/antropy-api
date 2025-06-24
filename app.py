@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Video source
-VIDEO_URL = "https://antropy-api.onrender.com/ants_compressed.mp4"
+VIDEO_URL = "https://antropy-api.onrender.com/static/ants_compressed.mp4"
 LOCAL_VIDEO = "video.mp4"
 
 # Configuration
