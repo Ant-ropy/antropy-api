@@ -34,12 +34,7 @@ def index():
 
 @app.route('/generate', methods=['GET'])
 def generate():
-    try:
-        urllib.request.urlretrieve(VIDEO_URL, LOCAL_VIDEO)
-    except Exception as e:
-        return jsonify({"error": "Failed to download video", "details": str(e)}), 500
-
-    cap = cv2.VideoCapture(LOCAL_VIDEO)
+    cap = cv2.VideoCapture("static/ants_browser_friendly.mp4")
     if not cap.isOpened():
         return jsonify({"error": "Failed to open video stream"}), 500
 
