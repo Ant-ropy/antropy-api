@@ -8,8 +8,10 @@ import math
 import urllib.request
 import os
 
+from flask_cors import CORS
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://antropy.net"])
 
 # Video source
 VIDEO_URL = "https://antropy-api.onrender.com/static/ants_browser_friendly.mp4"
